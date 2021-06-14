@@ -1,11 +1,10 @@
 name: Auto report
 
 on: 
-  push:
   workflow_dispatch:
-  #每天早上8点和下午4点自动执行
+  #北京时间每天早上8:30和下午4:30自动执行，Github Action默认国际标准时间
   schedule:
-    - cron: '30 8,16 * * *'
+    - cron: '30 0,8 * * *'
 
 jobs:
   build:
@@ -35,3 +34,17 @@ jobs:
         SCKEY: ${{secrets.SCKEY}}
       run: |
         python index.py "$USERNAME" "$PASSWORD" "$APP_ID" "$API_KEY" "$SECRET_KEY" "$SCKEY"
+
+    - name: 'Send mail'
+      uses: dawidd6/action-send-mail@master
+      if: ${{ failure() }}
+      with:
+        server_address: smtp.163.com
+        server_port: 465
+        username: ${{ secrets.MAIL_USERNAME }}    
+        password: ${{ secrets.MAIL_PASSWORD }}
+        subject: 健康打卡——失败
+        body: file://log.txt
+        # 默认发送给自己，可自定义
+        to: ${{ secrets.MAIL_USERNAME }}
+        from: GitHub Actions
