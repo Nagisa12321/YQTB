@@ -39,7 +39,7 @@ TIMEOUT = 10
 # 登录失败时重试的次数
 RETRY = 10
 # 每次连接的间隔
-RETRY_INTERVAL = 10
+RETRY_INTERVAL = 5
 
 
 class YQTB:
@@ -48,8 +48,9 @@ class YQTB:
         try:
             self.USERNAME = os.environ['USERNAME']  # 学号
             self.PASSWORD = os.environ['PASSWORD']  # 密码
+            if self.USERNAME == '' or self.PASSWORD == '':
+                raise ValueError("无法获取学号和密码")
         except Exception as e:
-            logger.warning(e)
             logger.warning('无法获取学号和密码，程序终止')
             sys.exit(1)
         self.csrfToken = ''
@@ -110,6 +111,8 @@ class YQTB:
             self.APP_ID = os.environ['APP_ID']
             self.API_KEY = os.environ['API_KEY']
             self.SECRET_KEY = os.environ['SECRET_KEY']
+            if self.APP_ID == '' or self.API_KEY == '' or self.SECRET_KEY == '':
+                raise ValueError("未配置百度OCR")
         except:
             logger.info('未配置百度OCR，采用默认验证码识别')
             return self.defaultOcr(image)
@@ -171,7 +174,8 @@ class YQTB:
         self.formUrl = res.url
         # 温馨提示
         if self.formStepId == '1':
-            self.workflowId = re.findall(r"workflowId = \"(.*?)\"", res.content.decode('utf-8'))[0]
+            self.workflowId = re.findall(
+                r"workflowId = \"(.*?)\"", res.content.decode('utf-8'))[0]
             url = "http://yqtb.gzhu.edu.cn/infoplus/interface/preview"
             payload = {
                 'workflowId': self.workflowId,
@@ -307,14 +311,18 @@ class YQTB:
     def notify(self, msg):
         try:
             self.SCKEY = os.environ['SCKEY']
+            if self.SCKEY == '':
+                raise ValueError("未提供SCKEY")
             self.serverNotify(msg)
-        except KeyError:
-            logger.info('您未提供server酱的SCKEY，取消微信推送消息通知')
+        except:
+            logger.info('您未提供Server酱的SCKEY，取消微信推送消息通知')
         try:
             self.PUSH_PLUS_TOKEN = os.environ['PUSH_PLUS_TOKEN']
+            if self.SCKEY == '':
+                raise ValueError("未提供PUSH_PLUS_TOKEN")
             self.pushNotify(msg)
-        except KeyError:
-            logger.info('您未提供push+的PUSH_PLUS_TOKEN，取消push+推送消息通知')
+        except:
+            logger.info('您未提供Push+的PUSH_PLUS_TOKEN，取消push+推送消息通知')
 
     def pushNotify(self, msg):
         url = 'http://www.pushplus.plus/send'
@@ -329,14 +337,14 @@ class YQTB:
             url, data=body, headers=headers).json(), ensure_ascii=False)
         datas = json.loads(response)
         if datas['code'] == 200:
-            logger.info('push+发送通知消息成功')
-        if datas['code'] == 600:
-            logger.warning('PUSH_PLUS_TOKEN 错误')
+            logger.info('【Push+】发送通知消息成功')
+        elif datas['code'] == 600:
+            logger.warning('【Push+】PUSH_PLUS_TOKEN 错误')
         else:
-            logger.warning('push+发送通知调用API失败！！')
+            logger.warning('【Push+】发送通知调用API失败！！')
 
     def serverNotify(self, msg):
-        url = 'https://sctapi.ftqq.com/' + self.SCKEY + '.send'
+        url = 'https://sc.ftqq.com/' + self.SCKEY + '.send'
         data = {
             'text': msg,
         }
@@ -344,11 +352,11 @@ class YQTB:
             url, data).json(), ensure_ascii=False)
         datas = json.loads(response)
         if datas['code'] == 0:
-            logger.info('server酱发送通知消息成功')
+            logger.info('【Server酱】发送通知消息成功')
         elif datas['code'] == 40001:
-            logger.warning('PUSH_KEY 错误')
+            logger.warning('【Server酱】SCKEY 错误')
         else:
-            logger.warning('发送通知调用API失败！！')
+            logger.warning('【Server酱】发送通知调用API失败！！')
 
     # 开始运行
     def run(self):
@@ -389,9 +397,7 @@ class YQTB:
 # 云函数
 def main_handler(event, context):
     logger.info('got event{}'.format(event))
-    username = os.getenv('USERNAME')  # 学号
-    password = os.getenv('PASSWORD')  # 密码
-    YQTB(username, password).run()
+    YQTB().run()
 
 
 # 本地测试
