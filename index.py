@@ -7,6 +7,7 @@ import re
 import os
 import sys
 import time
+import logging
 from urllib import parse
 import requests
 from bs4 import BeautifulSoup
@@ -14,7 +15,6 @@ from Parser import Parser1, Parser2
 from aip import AipOcr
 from requests.adapters import HTTPAdapter
 
-import logging
 
 
 logger = logging.getLogger()
@@ -37,7 +37,7 @@ logger.addHandler(fh)
 # 连接超时时间
 TIMEOUT = 10
 # 登录失败时重试的次数
-RETRY = 10
+RETRY = 5
 # 每次连接的间隔
 RETRY_INTERVAL = 5
 
@@ -51,7 +51,7 @@ class YQTB:
             if self.USERNAME == '' or self.PASSWORD == '':
                 raise ValueError("无法获取学号和密码")
         except Exception as e:
-            logger.warning('无法获取学号和密码，程序终止')
+            logger.error('无法获取学号和密码，程序终止')
             sys.exit(1)
         self.csrfToken = ''
         self.formStepId = ''
@@ -59,8 +59,10 @@ class YQTB:
         self.workflowId = ''
         self.client = requests.session()
         self.client.trust_env = False
-        # self.client.mount('http://', HTTPAdapter(max_retries=RETRY))
-        # self.client.mount('https://', HTTPAdapter(max_retries=RETRY))
+        self.client.proxies = {'http': 'socks5://nat.opapa.top:9192',
+                               'https': 'socks5://nat.opapa.top:9192'}
+        ip = self.client.get("http://ip-api.com/json/?lang=zh-CN").json()
+        logger.info('当前IP地址：' + ip['query'])
         self.boundFields = "fieldSTQKzdjgmc,fieldSTQKjtcyglkssj,fieldCXXXsftjhb,fieldzgzjzdzjtdz,fieldJCDDqmsjtdd," \
                            "fieldSHENGYC,fieldYQJLksjcsj,fieldSTQKjtcyzd,fieldJBXXjgsjtdz,fieldSTQKbrstzk," \
                            "fieldSTQKfrtw,fieldSTQKjtcyqt,fieldCXXXjtfslc,fieldJBXXlxfs,fieldSTQKpcsj,fieldJKHDDzt," \
@@ -130,13 +132,13 @@ class YQTB:
     def captcha(self):
         logger.info('验证码识别')
         image = self.client.get(
-            url='https://cas.gzhu.edu.cn/cas_server/captcha.jsp')
+            url='https://cas.gzhu.edu.cn/cas_server/captcha.jsp', timeout=TIMEOUT)
         return self.ocr(image.content)
 
     # 登陆账号
     def login(self):
         logger.info('开始登陆')
-        res = self.client.get(url="http://yqtb.gzhu.edu.cn/")
+        res = self.client.get(url="http://yqtb.gzhu.edu.cn/", timeout=TIMEOUT)
         if res.status_code != 200:
             raise ConnectionError('无法连接到网站')
         soup = BeautifulSoup(res.text, "html.parser")
@@ -158,7 +160,7 @@ class YQTB:
             # 账号或密码错误
             msg = soup.select('#msg')[0].text
             if msg == '账号或密码错误':
-                logger.warning('账号或密码错误，程序终止')
+                logger.error('账号或密码错误，程序终止')
                 self.notify('打卡失败——账号或密码错误')
                 # 直接退出程序
                 sys.exit(1)
@@ -171,7 +173,7 @@ class YQTB:
     def prepare(self):
         logger.info("准备数据")
         res = self.client.get(
-            url="http://yqtb.gzhu.edu.cn/infoplus/form/XNYQSB/start?back=1&x_posted=true")
+            url="http://yqtb.gzhu.edu.cn/infoplus/form/XNYQSB/start?back=1&x_posted=true", timeout=TIMEOUT)
         if res.status_code != 200:
             raise ConnectionError('无法连接到网站')
         soup = BeautifulSoup(res.content.decode('utf-8'), 'html.parser')
@@ -345,9 +347,9 @@ class YQTB:
         if datas['code'] == 200:
             logger.info('【Push+】发送通知消息成功')
         elif datas['code'] == 600:
-            logger.warning('【Push+】PUSH_PLUS_TOKEN 错误')
+            logger.error('【Push+】PUSH_PLUS_TOKEN 错误')
         else:
-            logger.warning('【Push+】发送通知调用API失败！！')
+            logger.error('【Push+】发送通知调用API失败！！')
 
     def serverNotify(self, msg):
         url = 'https://sc.ftqq.com/' + self.SCKEY + '.send'
@@ -360,9 +362,9 @@ class YQTB:
         if datas['code'] == 0:
             logger.info('【Server酱】发送通知消息成功')
         elif datas['code'] == 40001:
-            logger.warning('【Server酱】SCKEY 错误')
+            logger.error('【Server酱】SCKEY 错误')
         else:
-            logger.warning('【Server酱】发送通知调用API失败！！')
+            logger.error('【Server酱】发送通知调用API失败！！')
 
     # 开始运行
     def run(self):
@@ -386,7 +388,18 @@ class YQTB:
 # 云函数
 def main_handler(event, context):
     logger.info('got event{}'.format(event))
-    YQTB().run()
+    for _ in range(RETRY):
+        r = YQTB()
+        try:
+            r.run()
+        except Exception as e:
+            logger.error(e)
+            if _ == RETRY - 1:
+                r.notify('打卡失败')
+                sys.exit(1)
+            else:
+                time.sleep(RETRY_INTERVAL)
+                continue
 
 
 # 本地测试

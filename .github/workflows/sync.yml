@@ -1,0 +1,33 @@
+name: 同步代码
+
+on: 
+  workflow_dispatch:
+  schedule:
+    - cron: '0 22 * * *'
+  watch:
+        types: [started]
+
+concurrency: 
+  group: auto-report
+
+jobs:
+  repo-sync:
+    env:
+      PAT: ${{ secrets.PAT || github.event.client_payload.PAT }}
+    name: repo-sync
+    runs-on: ubuntu-latest
+    if: ${{ github.repository_owner != 'JacobZjw' }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+      
+    - name: repo-sync
+      uses: repo-sync/github-sync@v2
+      if:  env.PAT 
+      with:
+        source_repo: "https://github.com/JacobZjw/YQTB.git"
+        source_branch: "master"
+        destination_branch: "master"
+        github_token: ${{ secrets.PAT }}
