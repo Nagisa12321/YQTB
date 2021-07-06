@@ -333,11 +333,14 @@ class YQTB:
             logger.info('您未提供Push+的PUSH_PLUS_TOKEN，取消Push+推送消息通知')
 
     def pushNotify(self, msg):
+        with open('log.txt') as f:
+            contents = f.read()
+            msg = '<h1>' + msg + '</h1>\n' + contents
         url = 'http://www.pushplus.plus/send'
         data = {
             "token": self.PUSH_PLUS_TOKEN,
             "title": '健康打卡',
-            "content": msg
+            "content": msg,
         }
         body = json.dumps(data).encode(encoding='utf-8')
         headers = {'Content-Type': 'application/json'}
