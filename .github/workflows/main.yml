@@ -46,30 +46,30 @@ jobs:
       run: |
         python index.py
   
-    - name: 'Send mail of success'
-      uses: dawidd6/action-send-mail@master
-      if: ${{ env.MAIL && success() }}
-      with:
-        server_address: smtp.163.com
-        server_port: 465
-        username: ${{ secrets.MAIL_USERNAME }}    
-        password: ${{ secrets.MAIL_PASSWORD }}
-        subject: 健康打卡——成功
-        body: file://log.txt
-        # 默认发送给自己，可自定义
-        to: ${{ secrets.MAIL_USERNAME }}
-        from: GitHub Actions
+    # - name: 'Send mail of success'
+    #   uses: dawidd6/action-send-mail@v3
+    #   if: ${{ env.MAIL && success() }}
+    #   with:
+    #     server_address: smtp.163.com
+    #     server_port: 465
+    #     username: ${{ secrets.MAIL_USERNAME }}    
+    #     password: ${{ secrets.MAIL_PASSWORD }}
+    #     subject: 健康打卡——成功
+    #     body: file://log.txt
+    #     # 默认发送给自己，可自定义
+    #     to: ${{ secrets.MAIL_USERNAME }}
+    #     from: GitHub Actions
 
-    - name: 'Send mail of failure'
-      uses: dawidd6/action-send-mail@master
-      if: ${{ env.MAIL && failure() }}
-      with:
-        server_address: smtp.163.com
-        server_port: 465
-        username: ${{ secrets.MAIL_USERNAME }}    
-        password: ${{ secrets.MAIL_PASSWORD }}
-        subject: 健康打卡——失败
-        body: file://log.txt
-        # 默认发送给自己，可自定义
-        to: ${{ secrets.MAIL_USERNAME }}
-        from: GitHub Actions
+    # - name: 'Send mail of failure'
+    #   uses: dawidd6/action-send-mail@v3
+    #   if: ${{ env.MAIL && failure() }}
+    #   with:
+    #     server_address: smtp.163.com
+    #     server_port: 465
+    #     username: ${{ secrets.MAIL_USERNAME }}    
+    #     password: ${{ secrets.MAIL_PASSWORD }}
+    #     subject: 健康打卡——失败
+    #     body: file://log.txt
+    #     # 默认发送给自己，可自定义
+    #     to: ${{ secrets.MAIL_USERNAME }}
+    #     from: GitHub Actions
