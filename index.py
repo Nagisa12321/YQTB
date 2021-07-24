@@ -8,13 +8,13 @@ import os
 import sys
 import time
 import logging
+import execjs
 from urllib import parse
 import requests
 from bs4 import BeautifulSoup
 from Parser import Parser1, Parser2
 from aip import AipOcr
 from requests.adapters import HTTPAdapter
-
 
 
 logger = logging.getLogger()
@@ -46,8 +46,8 @@ class YQTB:
     # 初始化参数
     def __init__(self):
         try:
-            self.USERNAME = os.environ['USERNAME']  # 学号
-            self.PASSWORD = os.environ['PASSWORD']  # 密码
+            self.USERNAME = str(os.environ['USERNAME'])  # 学号
+            self.PASSWORD = str(os.environ['PASSWORD'])  # 密码
             if self.USERNAME == '' or self.PASSWORD == '':
                 raise ValueError("无法获取学号和密码")
         except Exception as e:
@@ -61,8 +61,12 @@ class YQTB:
         self.client.trust_env = False
         self.client.proxies = {'http': 'socks5://nat.opapa.top:9192',
                                'https': 'socks5://nat.opapa.top:9192'}
-        ip = self.client.get("http://ip-api.com/json/?lang=zh-CN").json()
-        logger.info('当前IP地址：' + ip['query'])
+        try:
+            ip = self.client.get("http://ip-api.com/json/?lang=zh-CN").json()
+            logger.info('当前IP地址：' + ip['query'])
+        except Exception as e:
+            logger.error('获取IP地址失败')
+            pass
         self.boundFields = "fieldSTQKzdjgmc,fieldSTQKjtcyglkssj,fieldCXXXsftjhb,fieldzgzjzdzjtdz,fieldJCDDqmsjtdd," \
                            "fieldSHENGYC,fieldYQJLksjcsj,fieldSTQKjtcyzd,fieldJBXXjgsjtdz,fieldSTQKbrstzk," \
                            "fieldSTQKfrtw,fieldSTQKjtcyqt,fieldCXXXjtfslc,fieldJBXXlxfs,fieldSTQKpcsj,fieldJKHDDzt," \
@@ -88,7 +92,7 @@ class YQTB:
                            "fieldSTQKjtcypcsj,fieldJBXXqu,fieldJBXXjgshi,fieldYQJLjcddq,fieldYQJLjcdryjkqk," \
                            "fieldYQJLjcdds,fieldSTQKjtcyhxkn,fieldCXXXjtzz,fieldJBXXjgq,fieldCXXXjtfsqt,fieldJBXXjgs," \
                            "fieldSTQKzdjgmcc,fieldJBXXqjtxxqk,fieldDQSJ,fieldSTQKjtcyglfs," \
-                           "fieldJCSJ,fieldYZNSFJCHS,fieldJKMsfwlm,fieldLYYZM"
+                           "fieldJCSJ,fieldYZNSFJCHS,fieldJKMsfwlm,fieldLYYZM,fieldSFJZYM"
         self.client.headers = {
             'Proxy-Connection': 'keep-alive',
             'Upgrade-Insecure-Requests': '1',
@@ -134,7 +138,14 @@ class YQTB:
         image = self.client.get(
             url='https://cas.gzhu.edu.cn/cas_server/captcha.jsp', timeout=TIMEOUT)
         return self.ocr(image.content)
-
+    
+    #新版教务系统需要加密
+    def desEnc(self, data, firstKey, sencondKey, thirdKey):
+        with open('./des.js', 'r', encoding='UTF-8') as file:
+            js = file.read()
+        des = execjs.compile(js)
+        return des.call('strEnc',data,firstKey,sencondKey,thirdKey)
+        
     # 登陆账号
     def login(self):
         logger.info('开始登陆')
@@ -146,13 +157,23 @@ class YQTB:
         post_url = soup.find('form')['action']
         post_data = {}
         for row in form:
-            post_data[row['name']] = row['value']
-        del post_data['reset']
+            if row.has_attr('name') and row.has_attr('value'):
+                post_data[row['name']] = row['value']
+        # del post_data['reset']
+
+        post_data['un'] = self.USERNAME
+        post_data['pd'] = self.PASSWORD
+        post_data['ul'] = len(self.USERNAME)
+        post_data['pl'] = len(self.PASSWORD)
+        encData = post_data['un'] + post_data['pd'] + post_data['lt']
+        post_data['rsa'] = self.desEnc(encData, '1', '2', '3')
+
         login_post_url = parse.urljoin(res.url, post_url)
 
-        post_data['username'] = self.USERNAME
-        post_data['password'] = self.PASSWORD
-        post_data['captcha'] = self.captcha()
+        # post_data['username'] = self.USERNAME
+        # post_data['password'] = self.PASSWORD
+        # post_data['captcha'] = self.captcha()
+
         res = self.client.post(url=login_post_url, data=post_data)
         soup = BeautifulSoup(res.content.decode('utf-8'), 'html.parser')
 

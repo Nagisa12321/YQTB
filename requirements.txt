@@ -3,3 +3,4 @@ beautifulsoup4==4.9.3
 lxml==4.6.2
 baidu-aip==2.2.18.0
 pysocks==1.7.1
+PyExecJS==1.5.1
