@@ -39,7 +39,7 @@ TIMEOUT = 10
 # 登录失败时重试的次数
 RETRY = 5
 # 每次连接的间隔
-RETRY_INTERVAL = 5
+RETRY_INTERVAL = 10
 
 
 class YQTB:
@@ -66,6 +66,7 @@ class YQTB:
             logger.info('当前IP地址：' + ip['query'])
         except Exception as e:
             logger.error('获取IP地址失败')
+            self.client.proxies = None
             pass
         self.boundFields = "fieldSTQKzdjgmc,fieldSTQKjtcyglkssj,fieldCXXXsftjhb,fieldzgzjzdzjtdz,fieldJCDDqmsjtdd," \
                            "fieldSHENGYC,fieldYQJLksjcsj,fieldSTQKjtcyzd,fieldJBXXjgsjtdz,fieldSTQKbrstzk," \
@@ -149,7 +150,7 @@ class YQTB:
     # 登陆账号
     def login(self):
         logger.info('开始登陆')
-        res = self.client.get(url="http://yqtb.gzhu.edu.cn/", timeout=TIMEOUT)
+        res = self.client.get(url="http://yq.gzhu.edu.cn/", timeout=TIMEOUT)
         if res.status_code != 200:
             raise ConnectionError('无法连接到网站')
         soup = BeautifulSoup(res.text, "html.parser")
@@ -159,7 +160,6 @@ class YQTB:
         for row in form:
             if row.has_attr('name') and row.has_attr('value'):
                 post_data[row['name']] = row['value']
-        # del post_data['reset']
 
         post_data['un'] = self.USERNAME
         post_data['pd'] = self.PASSWORD
@@ -169,10 +169,6 @@ class YQTB:
         post_data['rsa'] = self.desEnc(encData, '1', '2', '3')
 
         login_post_url = parse.urljoin(res.url, post_url)
-
-        # post_data['username'] = self.USERNAME
-        # post_data['password'] = self.PASSWORD
-        # post_data['captcha'] = self.captcha()
 
         res = self.client.post(url=login_post_url, data=post_data)
         soup = BeautifulSoup(res.content.decode('utf-8'), 'html.parser')
@@ -344,14 +340,14 @@ class YQTB:
                 raise ValueError("未提供SCKEY")
             self.serverNotify(msg)
         except:
-            logger.info('您未提供Server酱的SCKEY，取消微信推送消息通知')
+            pass
         try:
             self.PUSH_PLUS_TOKEN = os.environ['PUSH_PLUS_TOKEN']
             if self.PUSH_PLUS_TOKEN == '':
                 raise ValueError("未提供PUSH_PLUS_TOKEN")
             self.pushNotify(msg)
         except:
-            logger.info('您未提供Push+的PUSH_PLUS_TOKEN，取消Push+推送消息通知')
+            pass
 
     def pushNotify(self, msg):
         with open('log.txt') as f:
