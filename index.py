@@ -1,5 +1,4 @@
 # -*- coding: utf8 -*-
-
 import base64
 import json
 import random
@@ -63,82 +62,46 @@ class YQTB:
                                'https': 'socks5://nat.opapa.top:9192'}
         try:
             ip = self.client.get("http://ip-api.com/json/?lang=zh-CN").json()
-            logger.info('当前IP地址：' + ip['query'])
+            logger.info('连接到代理服务器')
         except Exception as e:
-            logger.error('获取IP地址失败')
+            logger.error('连接代理服务器失败')
             self.client.proxies = None
             pass
-        self.boundFields = "fieldSTQKzdjgmc,fieldSTQKjtcyglkssj,fieldCXXXsftjhb,fieldzgzjzdzjtdz,fieldJCDDqmsjtdd," \
-                           "fieldSHENGYC,fieldYQJLksjcsj,fieldSTQKjtcyzd,fieldJBXXjgsjtdz,fieldSTQKbrstzk," \
-                           "fieldSTQKfrtw,fieldSTQKjtcyqt,fieldCXXXjtfslc,fieldJBXXlxfs,fieldSTQKpcsj,fieldJKHDDzt," \
+        self.boundFields = "fieldSTQKzdjgmc,fieldSTQKjtcyglkssj,fieldCXXXsftjhb,fieldJCDDqmsjtdd,fieldYQJLksjcsj," \
+                           "fieldSTQKjtcyzd,fieldJBXXjgsjtdz,fieldSTQKbrstzk,fieldSTQKfrtw,fieldSTQKjtcyqt," \
+                           "fieldCXXXjtfslc,fieldJBXXlxfs,fieldSTQKxgqksm,fieldSTQKpcsj,fieldJKMsfwlm,fieldJKHDDzt," \
                            "fieldYQJLsfjcqtbl,fieldYQJLzhycjcsj,fieldSTQKfl,fieldSTQKhxkn,fieldJBXXbz,fieldCXXXsfylk," \
                            "fieldFLid,fieldjgs,fieldSTQKglfs,fieldCXXXsfjcgyshqzbl,fieldSTQKjtcyfx," \
                            "fieldCXXXszsqsfyyshqzbl,fieldJCDDshi,fieldSTQKrytsqkqsm,fieldJCDDs,fieldSTQKjtcyfs," \
-                           "fieldSTQKjtcyzljgmc,fieldSQSJ,fieldzgzjzdzs,fieldzgzjzdzq,fieldJBXXnj," \
-                           "fieldSTQKjtcyzdkssj,fieldSTQKfx,fieldSTQKfs,fieldYQJLjcdry,fieldCXXXjtfsdb,fieldCXXXcxzt," \
-                           "fieldYQJLjcddshi,fieldCXXXjtjtzz,fieldCXXXsftjhbs,fieldHQRQ,fieldSTQKjtcyqtms," \
-                           "fieldCXXXksjcsj,fieldSTQKzdkssj,fieldSTQKjtcyzysj,fieldjgshi,fieldSTQKjtcyxm," \
-                           "fieldJBXXsheng,fieldJBXXdrsfwc,fieldqjymsjtqk,fieldJBXXdw,fieldCXXXjcdr," \
-                           "fieldCXXXsftjhbjtdz,fieldJCDDq,fieldSTQKjtcyclfs,fieldSTQKxm,fieldCXXXjtgjbc," \
-                           "fieldSTQKjtcygldd,fieldzgzjzdzshi,fieldSTQKjtcyzdjgmcc,fieldSTQKzd,fieldSTQKqt," \
-                           "fieldCXXXlksj,fieldSTQKjtcyfrsj,fieldCXXXjtfsqtms,fieldSTQKjtcyzdmc,fieldCXXXjtfsfj," \
-                           "fieldJBXXfdy,fieldJBXXxm,fieldSTQKzljgmc,fieldCXXXzhycjcsj,fieldCXXXsftjhbq," \
-                           "fieldSTQKqtms,fieldYCFDY,fieldJBXXxb,fieldSTQKglkssj,fieldCXXXjtfspc,fieldSTQKbrstzk1," \
-                           "fieldYCBJ,fieldCXXXssh,fieldSTQKzysj,fieldJBXXgh,fieldCNS,fieldCXXXfxxq,fieldSTQKclfs," \
-                           "fieldSTQKqtqksm,fieldCXXXqjymsxgqk,fieldYCBZ,fieldJBXXxnjzbgdz,fieldSTQKjtcyfl," \
-                           "fieldSTQKjtcyzdjgmc,fieldCXXXddsj,fieldSTQKfrsj,fieldSTQKgldd,fieldCXXXfxcfsj," \
-                           "fieldJBXXbj,fieldSTQKks,fieldJBXXcsny,fieldCXXXjtzzq,fieldJBXXJG,fieldCXXXdqszd," \
-                           "fieldCXXXjtzzs,fieldJBXXshi,fieldSTQKjtcyfrtw,fieldSTQKjtcystzk1,fieldCXXXjcdqk," \
-                           "fieldSTQKzdmc,fieldSTQKjtcyks,fieldSTQKjtcystzk,fieldCXXXjtfshc,fieldCXXXcqwdq," \
-                           "fieldSTQKjtcypcsj,fieldJBXXqu,fieldJBXXjgshi,fieldYQJLjcddq,fieldYQJLjcdryjkqk," \
-                           "fieldYQJLjcdds,fieldSTQKjtcyhxkn,fieldCXXXjtzz,fieldJBXXjgq,fieldCXXXjtfsqt,fieldJBXXjgs," \
-                           "fieldSTQKzdjgmcc,fieldJBXXqjtxxqk,fieldDQSJ,fieldSTQKjtcyglfs," \
-                           "fieldJCSJ,fieldYZNSFJCHS,fieldJKMsfwlm,fieldLYYZM,fieldSFJZYM"
+                           "fieldSTQKjtcyzljgmc,fieldSQSJ,fieldJZDZC,fieldJBXXnj,fieldSTQKjtcyzdkssj,fieldSTQKfx," \
+                           "fieldSTQKfs,fieldYQJLjcdry,fieldCXXXjtfsdb,fieldCXXXcxzt,fieldYQJLjcddshi," \
+                           "fieldCXXXjtjtzz,fieldCXXXsftjhbs,fieldHQRQ,fieldSTQKjtcyqtms,fieldCXXXksjcsj," \
+                           "fieldSTQKzdkssj,fieldSTQKfxx,fieldSTQKjtcyzysj,fieldjgshi,fieldSTQKjtcyxm,fieldJBXXsheng," \
+                           "fieldZJYCHSJCYXJGRQzd,fieldJBXXdrsfwc,fieldqjymsjtqk,fieldJBXXdw,fieldCXXXjcdr," \
+                           "fieldCXXXsftjhbjtdz,fieldJCDDq,fieldSFJZYM,fieldSTQKjtcyclfs,fieldSTQKxm,fieldCXXXjtgjbc," \
+                           "fieldSTQKjtcygldd,fieldSTQKjtcyzdjgmcc,fieldSTQKzd,fieldSTQKqt,fieldCXXXlksj," \
+                           "fieldSTQKjtcyfrsj,fieldCXXXjtfsqtms,fieldSTQKjtcyzdmc,fieldCXXXjtfsfj,fieldJBXXfdy," \
+                           "fieldSTQKjtcyjmy,fieldJBXXxm,fieldJKMjt,fieldSTQKzljgmc,fieldCXXXzhycjcsj," \
+                           "fieldCXXXsftjhbq,fieldSTQKqtms,fieldYCFDY,fieldJBXXxb,fieldSTQKglkssj,fieldCXXXjtfspc," \
+                           "fieldSTQKbrstzk1,fieldYCBJ,fieldCXXXssh,fieldSTQKzysj,fieldLYYZM,fieldJBXXgh,fieldCNS," \
+                           "fieldCXXXfxxq,fieldSTQKclfs,fieldSTQKqtqksm,fieldCXXXqjymsxgqk,fieldYCBZ,fieldSTQKjmy," \
+                           "fieldSTQKjtcyxjwjjt,fieldJBXXxnjzbgdz,fieldSTQKjtcyfl,fieldSTQKjtcyzdjgmc,fieldCXXXddsj," \
+                           "fieldSTQKfrsj,fieldSTQKgldd,fieldCXXXfxcfsj,fieldJBXXbj,fieldSTQKjtcyfxx,fieldSTQKks," \
+                           "fieldJBXXcsny,fieldCXXXjtzzq,fieldJBXXJG,fieldCXXXdqszd,fieldCXXXjtzzs,fieldJBXXshi," \
+                           "fieldSTQKjtcyfrtw,fieldSTQKjtcystzk1,fieldCXXXjcdqk,fieldSTQKzdmc,fieldSTQKjtcyks," \
+                           "fieldSTQKjtcystzk,fieldCXXXjtfshc,fieldCXXXcqwdq,fieldSTQKxjwjjt,fieldSTQKjtcypcsj," \
+                           "fieldJBXXqu,fieldSTQKlt,fieldJBXXjgshi,fieldYQJLjcddq,fieldYQJLjcdryjkqk,fieldYQJLjcdds," \
+                           "fieldSTQKjtcyhxkn,fieldCXXXjtzz,fieldJBXXjgq,fieldCXXXjtfsqt,fieldJBXXjgs," \
+                           "fieldSTQKjtcylt,fieldSTQKzdjgmcc,fieldJBXXqjtxxqk,fieldDQSJ,fieldSTQKjtcyglfs "
         self.client.headers = {
             'Proxy-Connection': 'keep-alive',
             'Upgrade-Insecure-Requests': '1',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, '
+                          'like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,'
                       '*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
             'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,und;q=0.7',
         }
-
-    # 识别验证码
-    def defaultOcr(self, image):
-        image = base64.encodebytes(image)
-        url = "https://api2.chaney.top/release/gzhu"
-        payload = {
-            'key': 'b42fb9486f3c10e8654072f0648e694f',
-            'image': image,
-        }
-        response = requests.post(url, data=payload, timeout=TIMEOUT).json()
-        return response['result']
-
-    # 百度OCR识别验证码
-    def ocr(self, image):
-        try:
-            self.APP_ID = os.environ['APP_ID']
-            self.API_KEY = os.environ['API_KEY']
-            self.SECRET_KEY = os.environ['SECRET_KEY']
-            if self.APP_ID == '' or self.API_KEY == '' or self.SECRET_KEY == '':
-                raise ValueError("未配置百度OCR")
-        except:
-            logger.info('未配置百度OCR，采用默认验证码识别')
-            return self.defaultOcr(image)
-
-        aipClient = AipOcr(self.APP_ID, self.API_KEY, self.SECRET_KEY)  # 创建连接
-        res = aipClient.numbers(image, options=None)
-        vcode = ""
-        for tex in res["words_result"]:  # 遍历结果
-            vcode += tex["words"]
-        return vcode  # 输出内容
-
-    # 获取验证码
-    def captcha(self):
-        logger.info('验证码识别')
-        image = self.client.get(
-            url='https://cas.gzhu.edu.cn/cas_server/captcha.jsp', timeout=TIMEOUT)
-        return self.ocr(image.content)
     
     #新版教务系统需要加密
     def desEnc(self, data, firstKey, sencondKey, thirdKey):
@@ -256,7 +219,7 @@ class YQTB:
                 return False
             else:
                 self.formStepId = re.findall(r"\d+", res['entities'][0])[0]
-
+                self.formUrl = "http://yqtb.gzhu.edu.cn/infoplus/form/{}/render?back=2".format(self.formStepId)
         post_data = {
             'stepId': self.formStepId,
             'instanceId': '',
@@ -270,7 +233,7 @@ class YQTB:
             'Host': 'yqtb.gzhu.edu.cn',
             'Accept': 'application/json, text/javascript, */*; q=0.01',
             'X-Requested-With': 'XMLHttpRequest',
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1',
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             'Origin': 'http://yqtb.gzhu.edu.cn',
             'Referer': self.formUrl,
@@ -287,12 +250,18 @@ class YQTB:
     def start(self):
         logger.info("执行打卡")
         formData = Parser1(self.getDatas).get(),
+        formData[0]["_VAR_URL"] = self.formUrl
+        formData[0]['_VAR_ENTRY_NAME'] = '学生健康状况申报_'
+        formData[0]['_VAR_ENTRY_TAGS'] = '疫情应用,移动端'
 
+        formData[0]['fieldYQJLsfjcqtbl'] = '2'
+        formData[0]['fieldJKMsfwlm'] = '1'
+        formData[0]['fieldCXXXsftjhb'] = '2'
         headers = {
             'Host': 'yqtb.gzhu.edu.cn',
             'Accept': 'application/json, text/javascript, */*; q=0.01',
             'X-Requested-With': 'XMLHttpRequest',
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1',
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             'Origin': 'http://yqtb.gzhu.edu.cn',
             'Referer': self.formUrl,
@@ -305,7 +274,7 @@ class YQTB:
             'actionId': 1,
             'formData': json.dumps(formData[0]),
             'timestamp': int(time.time()),
-            'rand': random.uniform(700, 800),
+            'rand': random.uniform(300, 500),
             'boundFields': self.boundFields,
             'csrfToken': self.csrfToken,
             'lang': 'zh'
@@ -315,12 +284,13 @@ class YQTB:
             'stepId': self.formStepId,
             'actionId': 1,
             'formData': json.dumps(formData[0]),
-            'nextUsers': "{}",
             'timestamp': int(time.time()),
-            'rand': random.uniform(700, 800),
+            'rand': random.uniform(300, 500),
             'boundFields': self.boundFields,
             'csrfToken': self.csrfToken,
-            'lang': 'zh'
+            'lang': 'zh',
+            'nextUsers': '{}',
+            'remark': ''
         }
 
         res1 = self.client.post(url='http://yqtb.gzhu.edu.cn/infoplus/interface/listNextStepsUsers', headers=headers,
@@ -334,13 +304,6 @@ class YQTB:
 
     # 消息推送
     def notify(self, msg):
-        try:
-            self.SCKEY = os.environ['SCKEY']
-            if self.SCKEY == '':
-                raise ValueError("未提供SCKEY")
-            self.serverNotify(msg)
-        except:
-            pass
         try:
             self.PUSH_PLUS_TOKEN = os.environ['PUSH_PLUS_TOKEN']
             if self.PUSH_PLUS_TOKEN == '':
@@ -370,21 +333,6 @@ class YQTB:
             logger.error('【Push+】PUSH_PLUS_TOKEN 错误')
         else:
             logger.error('【Push+】发送通知调用API失败！！')
-
-    def serverNotify(self, msg):
-        url = 'https://sc.ftqq.com/' + self.SCKEY + '.send'
-        data = {
-            'text': msg,
-        }
-        response = json.dumps(requests.post(
-            url, data).json(), ensure_ascii=False)
-        datas = json.loads(response)
-        if datas['code'] == 0:
-            logger.info('【Server酱】发送通知消息成功')
-        elif datas['code'] == 40001:
-            logger.error('【Server酱】SCKEY 错误')
-        else:
-            logger.error('【Server酱】发送通知调用API失败！！')
 
     # 开始运行
     def run(self):
@@ -419,7 +367,6 @@ def main_handler(event, context):
                 sys.exit(1)
             else:
                 time.sleep(RETRY_INTERVAL)
-                continue
 
 
 # 本地测试
@@ -435,4 +382,3 @@ if __name__ == '__main__':
                 sys.exit(1)
             else:
                 time.sleep(RETRY_INTERVAL)
-                continue
