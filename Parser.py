@@ -272,6 +272,9 @@ class Parser1:
             'fieldJZDZC': '2',
             'fieldJKHDDzt': '1',
             'fieldJKHDDzt_Name': '健康',
+            # 表示上一次核酸检测时间
+            # 1630425600 -> 2021-09-01 00:00:00
+            # 转换地址：https://tool.chinaz.com/tools/unixtime.aspx
             'fieldZJYCHSJCYXJGRQzd': 1630425600.0,
         }
 
