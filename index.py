@@ -113,7 +113,7 @@ class YQTB:
     # 登陆账号
     def login(self):
         logger.info('开始登陆')
-        res = self.client.get(url="http://yq.gzhu.edu.cn/", timeout=TIMEOUT)
+        res = self.client.get(url="https://yq.gzhu.edu.cn/", timeout=TIMEOUT)
         if res.status_code != 200:
             raise ConnectionError('无法连接到网站')
         soup = BeautifulSoup(res.text, "html.parser")
