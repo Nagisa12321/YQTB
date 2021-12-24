@@ -62,9 +62,9 @@ class YQTB:
                                'https': 'socks5://nat.opapa.top:9192'}
         try:
             ip = self.client.get("http://ip-api.com/json/?lang=zh-CN").json()
-            logger.info('当前IP地址：' + ip['query'])
+            logger.info('连接到代理服务器')
         except Exception as e:
-            logger.error('获取IP地址失败')
+            logger.error('连接代理服务器失败')
             self.client.proxies = None
             pass
         self.boundFields = "fieldSTQKzdjgmc,fieldSTQKjtcyglkssj,fieldCXXXsftjhb,fieldJCDDqmsjtdd,fieldYQJLksjcsj," \
